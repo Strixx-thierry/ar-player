@@ -1,0 +1,78 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="Umwami.uss" />
+    <ui:VisualElement name="root" class="screen" picking-mode="Ignore">
+
+        <ui:VisualElement name="scan" class="page" picking-mode="Ignore">
+            <ui:VisualElement class="row"><ui:Button name="scan-close" class="icon-btn" /></ui:VisualElement>
+            <ui:VisualElement class="parch center" style="align-self: center;">
+                <ui:Label text="Find a place for the story" class="serif parch-head" />
+                <ui:Label text="Move your phone slowly over a table or the floor." class="parch-text" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="place" class="page hidden" picking-mode="Ignore">
+            <ui:VisualElement class="row"><ui:Button name="place-close" class="icon-btn" /></ui:VisualElement>
+            <ui:VisualElement class="row" style="align-self: center;">
+                <ui:VisualElement class="parch">
+                    <ui:Label text="Tap to place" class="serif parch-head" style="-unity-text-align: middle-left;" />
+                    <ui:Label text="Pinch to resize. Twist with two fingers to turn." class="parch-text" />
+                </ui:VisualElement>
+                <ui:Button name="start" text="Start" class="btn btn-primary" style="min-width: 120px; margin-left: 14px;"><ui:VisualElement class="btn-inner" picking-mode="Ignore" /></ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="player" class="page hidden" picking-mode="Ignore">
+            <ui:VisualElement name="player-top" class="row between top" picking-mode="Ignore">
+                <ui:VisualElement class="parch">
+                    <ui:Label name="chapter-kicker" text="CHAPTER 1 OF 7" class="parch-kicker" />
+                    <ui:Label name="chapter-title" text="The Fall" class="serif parch-title" />
+                </ui:VisualElement>
+                <ui:VisualElement class="row">
+                    <ui:Button name="move" class="icon-btn" />
+                    <ui:Button name="cc" text="CC" class="icon-btn" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement picking-mode="Ignore">
+                <ui:Label name="subtitle" text="" class="serif subtitle" />
+                <ui:VisualElement name="controls" class="dark-panel row">
+                    <ui:Button name="prev" class="icon-btn" />
+                    <ui:Button name="play" class="icon-btn" />
+                    <ui:Button name="next" class="icon-btn" />
+                    <ui:VisualElement name="bar" class="bar"><ui:VisualElement name="bar-fill" class="bar-fill" /></ui:VisualElement>
+                    <ui:Label name="time" text="0:00 / 1:00" class="time" />
+                    <ui:Button name="list" class="icon-btn" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="chapters-overlay" class="page hidden" style="padding: 0;">
+            <ui:VisualElement name="chapters-dim" class="dim" />
+            <ui:VisualElement class="side">
+                <ui:VisualElement class="row between" style="margin-bottom: 6px;">
+                    <ui:Label text="Chapters" class="display h3" />
+                    <ui:Button name="chapters-close" class="icon-btn" />
+                </ui:VisualElement>
+                <ui:VisualElement name="chapter-list" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="lost" class="page hidden" style="padding: 0; align-items: center; justify-content: center;">
+            <ui:VisualElement class="dim" />
+            <ui:VisualElement class="parch modal">
+                <ui:Label text="The story is waiting" class="serif parch-head" style="font-size: 22px;" />
+                <ui:Label text="Point your phone back at the table. It will carry on from where it stopped." class="parch-text" style="-unity-text-align: middle-center; margin-top: 6px; margin-bottom: 12px;" />
+                <ui:Button name="lost-replace" text="Place it again" class="btn"><ui:VisualElement class="btn-inner" picking-mode="Ignore" /></ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="ending" class="page center dim-strong hidden" style="padding: 22px 40px;">
+            <ui:Label text="The fire that must never go out" class="display h2" />
+            <ui:Label name="credits" class="body" />
+            <ui:VisualElement class="row">
+                <ui:Button name="again" text="Watch again" class="btn btn-primary"><ui:VisualElement class="btn-inner" picking-mode="Ignore" /></ui:Button>
+                <ui:Button name="ending-chapters" text="Chapters" class="btn"><ui:VisualElement class="btn-inner" picking-mode="Ignore" /></ui:Button>
+                <ui:Button name="ending-title" text="Title" class="btn"><ui:VisualElement class="btn-inner" picking-mode="Ignore" /></ui:Button>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
