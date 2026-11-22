@@ -24,6 +24,11 @@ public class StoryScreen : MonoBehaviour
 
     ARPlaneManager planes;
     DioramaStage stage;
+    StoryDirector director;
+    AudioSource audioSource;
+    float hintUntil, lastPinchDist, lastPinchAngle;
+    bool pinching, pinchUsed;
+    const string Hint = "Pinch to zoom in close. Hold your phone steady, or step closer, if it shakes.";
     VisualElement uiRoot;
     Page page;
     int chapter;
@@ -33,6 +38,10 @@ public class StoryScreen : MonoBehaviour
     void OnEnable()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        StoryData.LoadAudio();
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
+        audioSource.playOnAwake = false;
         var root = GetComponent<UIDocument>().rootVisualElement;
         if (root == null) return;
 
@@ -103,6 +112,8 @@ public class StoryScreen : MonoBehaviour
         uiRoot = root;
         stage = FindAnyObjectByType<DioramaStage>();
         if (stage == null) stage = new GameObject("DioramaStage").AddComponent<DioramaStage>();
+        director = FindAnyObjectByType<StoryDirector>();
+        if (director == null) director = new GameObject("StoryDirector").AddComponent<StoryDirector>();
         chapter = Mathf.Clamp(StoryData.startChapter, 0, StoryData.Chapters.Length - 1);
         t = 0f;
         RefreshChapter();
@@ -129,33 +140,30 @@ public class StoryScreen : MonoBehaviour
                 break;
 
             case Page.Place:
-                // A tap on the camera view (not on a button) places or moves the diorama.
-                if (Pointer.current != null && Pointer.current.press.wasPressedThisFrame && stage != null)
+                // A tap on the camera view (not on a button) places or moves the diorama. A pinch never counts as a tap.
+                Pinch();
+                if (Pointer.current != null && stage != null)
                 {
-                    Vector2 sp = Pointer.current.position.ReadValue();
-                    if (!OverUi(sp)) stage.TryPlace(sp);
+                    if (Pointer.current.press.wasPressedThisFrame) pinchUsed = false;
+                    if (pinching) pinchUsed = true;
+                    if (Pointer.current.press.wasReleasedThisFrame && !pinchUsed)
+                    {
+                        Vector2 sp = Pointer.current.position.ReadValue();
+                        if (!OverUi(sp)) stage.TryPlace(sp);
+                    }
                 }
                 break;
 
             case Page.Player:
                 bool trackingLost = hadTracking && ARSession.state != ARSessionState.SessionTracking;
                 StoryData.Show(lost, trackingLost);
-                if (trackingLost) break;
+                bool run = playing && !trackingLost;
+                if (run) Advance();
+                else if (audioSource.isPlaying) audioSource.Pause();
+                if (page != Page.Player) break;
 
-                if (playing)
-                {
-                    t += Time.deltaTime;
-                    if (t >= StoryData.Chapters[chapter].duration)
-                    {
-                        if (chapter >= StoryData.Chapters.Length - 1)
-                        {
-                            SetPlaying(false);
-                            Show(Page.Ending);
-                            break;
-                        }
-                        Jump(chapter + 1);
-                    }
-                }
+                Pinch();
+                director.Evaluate(chapter, t, run);
                 RefreshProgress();
 
                 // Controls step back after a few seconds; any touch brings them back.
@@ -176,14 +184,81 @@ public class StoryScreen : MonoBehaviour
         StoryData.Show(ending, p == Page.Ending);
         StoryData.Show(chaptersOverlay, false);
         if (p != Page.Player) StoryData.Show(lost, false);
+        if (p != Page.Player && audioSource != null) audioSource.Pause();
+        if (p == Page.Player) hintUntil = Time.unscaledTime + 7f;
+        // The surface overlay is only for finding a spot; hide it so it cannot flicker over the models.
+        if (stage != null) stage.ShowPlanes(p == Page.Scan || p == Page.Place);
     }
 
     void Jump(int index)
     {
         chapter = Mathf.Clamp(index, 0, StoryData.Chapters.Length - 1);
         t = 0f;
+        if (audioSource != null) audioSource.Stop();
         RefreshChapter();
         RefreshProgress();
+    }
+
+    /// <summary>Moves the chapter clock on. The narration is the clock when it is playing; the timer covers a missing clip.</summary>
+    void Advance()
+    {
+        var c = StoryData.Chapters[chapter];
+        t += Time.deltaTime;
+        if (c.clip != null)
+        {
+            if (audioSource.isPlaying) { if (Mathf.Abs(audioSource.time - t) > 0.3f) t = audioSource.time; }
+            else if (t < c.duration - 0.25f)
+            {
+                audioSource.clip = c.clip;
+                audioSource.time = Mathf.Clamp(t, 0f, c.clip.length - 0.05f);
+                audioSource.Play();
+            }
+        }
+        if (t < c.duration) return;
+
+        if (chapter >= StoryData.Chapters.Length - 1)
+        {
+            SetPlaying(false);
+            audioSource.Stop();
+            Show(Page.Ending);
+        }
+        else Jump(chapter + 1);
+    }
+
+    /// <summary>Two fingers zoom and turn the story; the mouse wheel does the same in the editor.</summary>
+    void Pinch()
+    {
+        pinching = false;
+        if (stage == null) return;
+        var ts = Touchscreen.current;
+        if (ts != null)
+        {
+            int n = 0;
+            Vector2 a = default, b = default;
+            foreach (var tc in ts.touches)
+            {
+                if (!tc.isInProgress) continue;
+                if (n == 0) a = tc.position.ReadValue(); else if (n == 1) b = tc.position.ReadValue();
+                n++;
+            }
+            if (n >= 2)
+            {
+                float d = (a - b).magnitude;
+                float ang = Mathf.Atan2(b.y - a.y, b.x - a.x) * Mathf.Rad2Deg;
+                if (lastPinchDist > 1f) stage.Pinch(d / lastPinchDist, -Mathf.DeltaAngle(lastPinchAngle, ang));
+                lastPinchDist = d;
+                lastPinchAngle = ang;
+                pinching = true;
+                return;
+            }
+            lastPinchDist = 0f;
+        }
+        var mouse = Mouse.current;
+        if (mouse != null && Application.isEditor)
+        {
+            float wheel = mouse.scroll.ReadValue().y;
+            if (Mathf.Abs(wheel) > 0.1f) stage.Pinch(1f + wheel * 0.0015f, 0f);
+        }
     }
 
     void SetPlaying(bool on)
@@ -240,6 +315,7 @@ public class StoryScreen : MonoBehaviour
         if (subtitlesOn)
             foreach (var l in c.lines)
                 if (t >= l.start && t < l.end) { line = l.text; break; }
+        if (line == null && Time.unscaledTime < hintUntil) line = Hint;
         if (subtitle != null)
         {
             subtitle.text = line ?? "";

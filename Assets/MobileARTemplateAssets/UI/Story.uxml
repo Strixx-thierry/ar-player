@@ -15,7 +15,7 @@
             <ui:VisualElement class="row" style="align-self: center;">
                 <ui:VisualElement class="parch">
                     <ui:Label text="Tap to place" class="serif parch-head" style="-unity-text-align: middle-left;" />
-                    <ui:Label text="Pinch to resize. Twist with two fingers to turn." class="parch-text" />
+                    <ui:Label text="Stay close and hold the phone steady. Pinch to zoom in to ground level. Twist to turn." class="parch-text" />
                 </ui:VisualElement>
                 <ui:Button name="start" text="Start" class="btn btn-primary" style="min-width: 120px; margin-left: 14px;"><ui:VisualElement class="btn-inner" picking-mode="Ignore" /></ui:Button>
             </ui:VisualElement>

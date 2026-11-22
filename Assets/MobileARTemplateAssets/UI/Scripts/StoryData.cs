@@ -1,6 +1,7 @@
+using UnityEngine;
 using UnityEngine.UIElements;
 
-/// <summary>The chapters of the telling. Timings and lines are placeholders until the narration is recorded.</summary>
+/// <summary>The chapters of the telling, with the narration lines timed to the recording.</summary>
 public static class StoryData
 {
     public class Line
@@ -15,51 +16,66 @@ public static class StoryData
 
     public class Chapter
     {
-        public string title;
+        public string title, clipName;
         public Location location;
         public float duration;
+        public AudioClip clip;
         public Line[] lines;
-        public Chapter(string title, Location location, float duration, params Line[] lines)
-        { this.title = title; this.location = location; this.duration = duration; this.lines = lines; }
+        public Chapter(string title, Location location, string clipName, float duration, params Line[] lines)
+        { this.title = title; this.location = location; this.clipName = clipName; this.duration = duration; this.lines = lines; }
     }
 
-    // The legend of Kigwa, sections 1 and 2 (birth in the world above, the fall to Mubari).
-    // Lines and timings are drafts until the narration is recorded.
+    // The legend of Kigwa, sections 1 and 2. Line times are seconds into the chapter's narration clip in Assets/Resources.
     public static readonly Chapter[] Chapters =
     {
-        new Chapter("The World Above", Location.SkyWorld, 35,
-            new Line(2, 9, "Long ago, above the clouds, there was another country."),
-            new Line(10, 18, "Its lord was Nkuba, master of thunder. Some call him Shyerezo."),
-            new Line(20, 30, "He had his huts, his cattle and his milk, as people do below.")),
-        new Chapter("The Heart in the Jar", Location.SkyWorld, 45,
-            new Line(2, 10, "One day a bull was offered."),
-            new Line(11, 20, "Its heart was hidden in a jar carved from umuko wood."),
-            new Line(22, 32, "Every morning, fresh milk was poured into the jar."),
-            new Line(34, 42, "And every morning, the jar was closed again.")),
-        new Chapter("The Child from the Jar", Location.SkyWorld, 50,
-            new Line(2, 10, "Nine months went by."),
-            new Line(11, 20, "Then, from the jar, came a little boy."),
-            new Line(22, 31, "His mother was Gasani. They called him Kigwa."),
-            new Line(33, 46, "But Nkuba would not accept the boy as his son.")),
-        new Chapter("The Secret", Location.SkyWorld, 45,
-            new Line(2, 11, "Kigwa grew up without knowing how he was born."),
-            new Line(12, 21, "One day, by chance, he learned the secret."),
-            new Line(23, 32, "He was angry, even with his mother."),
-            new Line(34, 42, "So he chose to leave the world above.")),
-        new Chapter("The Fall", Location.Fall, 40,
-            new Line(2, 10, "Kigwa came down from the sky with his companions."),
-            new Line(12, 22, "His sister Nyampundu was with him, some tellers say."),
-            new Line(24, 36, "They fell a long way, and they landed safe and sound.")),
-        new Chapter("Ikinani", Location.Mubari, 45,
-            new Line(2, 11, "They came down in the east, in the old land of Mubari, near Lake Ihema."),
-            new Line(13, 23, "Under a great rock called Ikinani, they found their first shelter."),
-            new Line(25, 38, "That is why his name is Kigwa: the one who fell.")),
-        new Chapter("Ibimanuka", Location.Mubari, 50,
-            new Line(2, 11, "The people of the land came out to see the strangers."),
-            new Line(12, 22, "They called them Ibimanuka: those who came down from the sky."),
-            new Line(25, 36, "That is how my elders told it, and their elders before them."),
-            new Line(38, 47, "Other tellers say it differently. Listen to them too.")),
+        new Chapter("The World Above", Location.SkyWorld, "01_TheWorldAbove", 18.6f,
+            new Line(0.2f, 3.9f, "Listen, and I will tell you how the first king came to us."),
+            new Line(4.4f, 7.7f, "Long ago, above the clouds, there was another country."),
+            new Line(8.1f, 13.5f, "Its lord was Nkuba, master of thunder. Some call him Shyerezo."),
+            new Line(13.8f, 18.6f, "He had his huts, his cattle and his milk, just as people do down here.")),
+        new Chapter("The Heart in the Jar", Location.SkyWorld, "02_TheHeartInTheJar", 15.1f,
+            new Line(0.0f, 2.1f, "One day, a bull was offered."),
+            new Line(2.3f, 6.5f, "Its heart was taken and hidden in a jar carved from umuko wood."),
+            new Line(6.9f, 10.0f, "Every morning, fresh milk was poured into the jar."),
+            new Line(10.0f, 12.7f, "And every morning, the jar was closed again."),
+            new Line(13.1f, 15.1f, "No one knew what was growing inside.")),
+        new Chapter("The Child from the Jar", Location.SkyWorld, "03_TheChildFromTheJar", 13.0f,
+            new Line(0.1f, 1.5f, "Nine months went by."),
+            new Line(1.7f, 4.9f, "Then, one morning, a little boy came out of the jar."),
+            new Line(5.3f, 9.9f, "His mother was Gasani, and she loved him. They called him Kigwa."),
+            new Line(10.1f, 13.0f, "But Nkuba would not accept the boy as his son.")),
+        new Chapter("The Secret", Location.SkyWorld, "04_TheSecret", 16.5f,
+            new Line(0.2f, 3.0f, "Kigwa grew up without knowing how he was born."),
+            new Line(3.6f, 7.0f, "One day, by chance, he learned the secret of the jar."),
+            new Line(7.3f, 10.5f, "He was hurt, and he was angry, even with his mother."),
+            new Line(10.6f, 12.9f, "So he chose to leave the world above."),
+            new Line(13.2f, 16.5f, "He walked to the edge of the clouds, and he did not look back.")),
+        new Chapter("The Fall", Location.Fall, "05_TheFall", 15.4f,
+            new Line(0.2f, 3.3f, "Kigwa came down from the sky, and he was not alone."),
+            new Line(3.7f, 8.4f, "His sister Nyampundu came with him, and a companion too, some tellers say."),
+            new Line(8.7f, 13.4f, "They fell a long, long way, past the clouds and past the birds."),
+            new Line(13.6f, 15.4f, "And they landed safe and sound.")),
+        new Chapter("Ikinani", Location.Mubari, "06_Ikinani", 13.8f,
+            new Line(0.1f, 4.7f, "They came down in the east, in the old land of Mubari, near Lake Ihema."),
+            new Line(5.0f, 10.4f, "There stood a great rock called Ikinani. Under it, they found their first shelter."),
+            new Line(10.6f, 13.8f, "That is why his name is Kigwa: the one who fell.")),
+        new Chapter("Ibimanuka", Location.Mubari, "07_Ibimanuka", 16.9f,
+            new Line(0.1f, 2.8f, "The people of the land came out to see the strangers."),
+            new Line(3.1f, 6.0f, "They had never seen anyone come down from the sky."),
+            new Line(6.1f, 10.3f, "So they called them Ibimanuka: those who came down from the sky."),
+            new Line(10.5f, 13.9f, "That is how my elders told it, and their elders before them."),
+            new Line(14.2f, 16.9f, "Other tellers say it differently. Listen to them too.")),
     };
+
+    /// <summary>Loads each chapter's narration and takes its length as the chapter length. Without a clip the written length stays.</summary>
+    public static void LoadAudio()
+    {
+        foreach (var c in Chapters)
+        {
+            if (c.clip == null) c.clip = Resources.Load<AudioClip>(c.clipName);
+            if (c.clip != null) c.duration = c.clip.length;
+        }
+    }
 
     public const string Credits =
         "Umwami's Ascend retells the opening of the Rwandan legend of Kigwa and the Ibimanuka: " +
