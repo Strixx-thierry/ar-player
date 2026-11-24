@@ -1,10 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Stages every chapter: who stands where, what they do, and the heart, milk and jar. Everything is a pure
-/// function of chapter time, so jumping or scrubbing always shows the right picture. Beats follow the narration lines.
-/// </summary>
+/// <summary>Stages each chapter as a pure function of chapter time, so jumping always shows the right picture.</summary>
 public class StoryDirector : MonoBehaviour
 {
     // Set to 180 if the characters walk backwards on the device.

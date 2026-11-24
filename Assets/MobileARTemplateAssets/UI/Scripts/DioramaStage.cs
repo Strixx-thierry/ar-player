@@ -4,10 +4,7 @@ using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
 
-/// <summary>
-/// Holds the three story dioramas (SkyWorld, Fall, Mubari from Assets/Resources), places them on a
-/// tapped surface and shows the one the current chapter plays on.
-/// </summary>
+/// <summary>Holds the three dioramas, places them on a tapped surface and shows the one the current chapter plays on.</summary>
 public class DioramaStage : MonoBehaviour
 {
     [Tooltip("Width of a diorama on the table, in metres.")]

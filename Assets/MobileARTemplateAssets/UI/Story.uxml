@@ -66,7 +66,7 @@
         </ui:VisualElement>
 
         <ui:VisualElement name="ending" class="page center dim-strong hidden" style="padding: 22px 40px;">
-            <ui:Label text="The fire that must never go out" class="display h2" />
+            <ui:Label text="Those who came down from the sky" class="display h2" />
             <ui:Label name="credits" class="body" />
             <ui:VisualElement class="row">
                 <ui:Button name="again" text="Watch again" class="btn btn-primary"><ui:VisualElement class="btn-inner" picking-mode="Ignore" /></ui:Button>

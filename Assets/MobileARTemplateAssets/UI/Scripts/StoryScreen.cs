@@ -4,10 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UnityEngine.XR.ARFoundation;
 
-/// <summary>
-/// The pages shown over the camera: Scan, Place, Player and Ending, plus the chapter list
-/// and tracking-lost overlays. Chapters run on a timer and show their diorama through DioramaStage.
-/// </summary>
+/// <summary>The pages shown over the camera (Scan, Place, Player, Ending), plus the chapter list and tracking-lost overlays.</summary>
 [RequireComponent(typeof(UIDocument))]
 public class StoryScreen : MonoBehaviour
 {
@@ -38,6 +35,9 @@ public class StoryScreen : MonoBehaviour
     void OnEnable()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
+        // A fixed target keeps the Profiler benchmark repeatable.
+        QualitySettings.vSyncCount = 0;
+        Application.targetFrameRate = 60;
         StoryData.LoadAudio();
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null) audioSource = gameObject.AddComponent<AudioSource>();
